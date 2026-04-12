@@ -25,7 +25,11 @@ async function generate(){
   const data = await res.json();
 
   if(data.output){
-    document.getElementById("result").src = data.output[0];
+    const imageUrl = Array.isArray(data.output)
+  ? data.output[0]
+  : data.output;
+
+document.getElementById("result").src = imageUrl;
     document.getElementById("status").innerText = "Done!";
   } else {
     document.getElementById("status").innerText = data.error || "Error";
