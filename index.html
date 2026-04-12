@@ -12,27 +12,55 @@
   <img id="result" style="max-width:500px;margin-top:20px;"/>
 
 <script>
-async function generate(){
-  const prompt = document.getElementById("prompt").value;
-  document.getElementById("status").innerText = "Generating...";
+async function generate() {
+  const prompt = document.getElementById("prompt").value.trim();
+  const statusEl = document.getElementById("status");
+  const resultEl = document.getElementById("result");
 
-  const res = await fetch("/api/generate", {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ prompt })
-  });
+  if (!prompt) {
+    statusEl.innerText = "Please enter a prompt.";
+    return;
+  }
 
-  const data = await res.json();
+  statusEl.innerText = "Generating...";
+  resultEl.removeAttribute("src");
 
-  if(data.output){
-    const imageUrl = Array.isArray(data.output)
-  ? data.output[0]
-  : data.output;
+  try {
+    const res = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ prompt })
+    });
 
-document.getElementById("result").src = imageUrl;
-    document.getElementById("status").innerText = "Done!";
-  } else {
-    document.getElementById("status").innerText = data.error || "Error";
+    const data = await res.json();
+    console.log("FULL RESPONSE:", data);
+
+    if (!res.ok) {
+      statusEl.innerText = data.error || "Request failed";
+      return;
+    }
+
+    if (!data.output) {
+      statusEl.innerText = "No image returned";
+      return;
+    }
+
+    const imageUrl = Array.isArray(data.output) ? data.output[0] : data.output;
+
+    if (!imageUrl || typeof imageUrl !== "string") {
+      statusEl.innerText = "Invalid image URL";
+      return;
+    }
+
+    resultEl.src = imageUrl;
+    resultEl.style.maxWidth = "500px";
+    resultEl.style.marginTop = "20px";
+    statusEl.innerText = "Done!";
+  } catch (err) {
+    console.error(err);
+    statusEl.innerText = "Error: " + err.message;
   }
 }
 </script>
