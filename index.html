@@ -8,10 +8,20 @@
   <input id="prompt" style="width:60%;padding:10px;" placeholder="Enter prompt..."/>
   <br><br>
   <button onclick="generate()" style="padding:10px 20px;">Generate</button>
+  <button id="downloadBtn" style="padding:10px 20px; display:none;">Download Image</button>
   <p id="status"></p>
   <img id="result" style="max-width:500px;margin-top:20px;"/>
 
 <script>
+  document.getElementById("downloadBtn").onclick = function () {
+  const imageUrl = document.getElementById("result").src;
+  const a = document.createElement("a");
+  a.href = imageUrl;
+  a.download = "generated-image.png";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};
 async function generate() {
   const prompt = document.getElementById("prompt").value.trim();
   const statusEl = document.getElementById("status");
