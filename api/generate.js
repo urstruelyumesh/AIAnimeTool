@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     const { prompt } = req.body;
 
     const replicateRes = await fetch(
-      "https://api.replicate.com/v1/models/google/nano-banana-2/predictions",
+      "https://api.replicate.com/v1/models/black-forest-labs/flux-2-pro/predictions",
       {
         method: "POST",
         headers: {
